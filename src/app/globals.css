@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* :root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+} */
+
+@layer base {
+  body { 
+    @apply bg-dark text-offWhite
+  }
+
+  form input {
+    @apply py-2 px-3 rounded-md text-dark
+  }
+}
+
+@layer components {
+  .nav-bar {
+    @apply bg-primary-300 fixed left-0 h-screen w-[15rem] py-4
+    hidden md:flex flex-col items-center justify-center rounded-tr-2xl rounded-br-2xl 
+    overflow-scroll z-10 shadow-md
+  }
+  .nav-bar.collapsed {
+    @apply w-[6rem]
+  }
+  .mobile-nav {
+    @apply bg-primary-300 md:hidden relative flex flex-col justify-center items-center rounded-bl-2xl rounded-br-2xl
+  }
+  .tab-list {
+    @apply flex flex-col gap-2
+  }
+  .nav-item {
+    @apply text-offWhite font-bold cursor-pointer flex items-center gap-3 text-base
+    py-2 px-3 select-none transition-all duration-100 ease-in
+  }
+  .nav-item:not(.active-nav):hover {
+    @apply bg-slate-300 text-primary-300 rounded-xl
+  }
+  .active-nav {
+    @apply bg-offWhite text-primary-300 rounded-xl hover:text-primary-300
+  }
+  .btn {
+    @apply rounded-2xl
+  }
+  .btn[disabled] {
+    @apply bg-primary-300/90 text-slate-400
+  }
+  .task {
+    @apply hover:opacity-80 transition-opacity duration-200
+  }
+  .badge-label {
+    @apply bg-dark rounded-xl font-bold shadow-sm outline outline-1 outline-gray-600
+    flex gap-2 items-center max-w-fit w-max px-3 py-1
+  }
+  .input {
+    @apply bg-offWhite text-dark h-11
+  }
+}

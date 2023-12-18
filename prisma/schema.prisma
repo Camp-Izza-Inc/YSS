@@ -1,0 +1,277 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model accounts {
+  id                 String                @id @db.VarChar(36)
+  email              String                @unique(map: "email_UNIQUE") @db.VarChar(50)
+  first_name         String                @db.VarChar(30)
+  last_name          String                @db.VarChar(30)
+  user_password      String                @db.VarChar(500)
+  account_type       accounts_account_type
+  account_created    DateTime?             @db.DateTime(0)
+  status             accounts_status?      @default(active)
+  counselors         counselors?
+  financial_aid_apps financial_aid_apps?
+  parents            parents?
+  youth              youth?
+}
+
+model buses {
+  id       Int    @id @default(autoincrement())
+  name     String @db.VarChar(45)
+  capacity Int
+  count    Int?   @default(0)
+}
+
+model cabins {
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(45)
+  capacity     Int
+  gender       cabins_gender
+  count        Int?           @default(0)
+  youth_groups youth_groups[]
+}
+
+model counselor_groups {
+  counselor_id String     @id @db.VarChar(36)
+  bus          Int?
+  family       String?    @db.VarChar(30)
+  cabin        String?    @db.VarChar(30)
+  counselors   counselors @relation(fields: [counselor_id], references: [counselor_id], onDelete: Cascade, map: "counselor_group_id_fk")
+}
+
+model counselors {
+  counselor_id      String                 @id @db.VarChar(36)
+  first_name        String?                @db.VarChar(45)
+  last_name         String?                @db.VarChar(45)
+  phone_number      String?                @db.VarChar(10)
+  gender            counselors_gender?
+  shirt_size        counselors_shirt_size?
+  birthday          DateTime?              @db.Date
+  city              String?                @db.VarChar(30)
+  availability      String?                @db.VarChar(45)
+  training          String?                @db.VarChar(45)
+  years             String?                @db.VarChar(45)
+  siblings          String?                @db.VarChar(45)
+  previous          String?                @db.VarChar(45)
+  experience        String?                @db.VarChar(45)
+  age_group         String?                @db.VarChar(45)
+  why               String?                @db.VarChar(45)
+  fit               String?                @db.VarChar(45)
+  other             String?                @db.VarChar(45)
+  reference         String?                @db.VarChar(45)
+  convicted         String?                @db.VarChar(45)
+  convicted_explain String?                @db.VarChar(45)
+  review_status     String?                @db.VarChar(45)
+  counselor_groups  counselor_groups?
+  accounts          accounts               @relation(fields: [counselor_id], references: [id], onDelete: Cascade, map: "counselor_account_id_fk")
+}
+
+model event_assignments {
+  id        Int       @id @default(autoincrement())
+  family_id Int?
+  event_id  Int?
+  events    events?   @relation(fields: [event_id], references: [event_id], onDelete: Cascade, map: "event_event_id_fk")
+  families  families? @relation(fields: [family_id], references: [id], onDelete: Cascade, map: "event_family_id_fk")
+
+  @@index([event_id], map: "event_event_id_fk_idx")
+  @@index([family_id], map: "event_family_id_fk_idx")
+}
+
+model events {
+  event_id          Int                  @id @default(autoincrement())
+  name              String?              @db.VarChar(45)
+  date              DateTime?            @db.Date
+  start_time        DateTime?            @db.Time(0)
+  start_period      events_start_period?
+  end_time          DateTime?            @db.Time(0)
+  end_period        events_end_period?
+  location          String?              @db.VarChar(45)
+  event_assignments event_assignments[]
+}
+
+model families {
+  id                Int                 @id @default(autoincrement())
+  name              String              @db.VarChar(45)
+  capacity          Int
+  grade             Int
+  count             Int?                @default(0)
+  capacity_boys     Int?
+  capacity_girls    Int?
+  count_boys        Int?                @default(0)
+  count_girls       Int?                @default(0)
+  event_assignments event_assignments[]
+  youth_groups      youth_groups[]
+}
+
+model financial_aid_apps {
+  parent_id             String                       @id @db.VarChar(36)
+  household_size        Int
+  annual_income         String                       @db.VarChar(20)
+  able_to_pay           Float                        @db.Float
+  local_org_description String                       @db.VarChar(50)
+  circ_description      String                       @db.VarChar(50)
+  submitted_at          DateTime?                    @db.DateTime(0)
+  approved              financial_aid_apps_approved? @default(pending)
+  accounts              accounts                     @relation(fields: [parent_id], references: [id], onDelete: Cascade, map: "financial_aid_parent_id_fk")
+}
+
+model parents {
+  parent_id               String     @id @db.VarChar(36)
+  first_name              String?    @db.VarChar(45)
+  last_name               String?    @db.VarChar(45)
+  birthday                DateTime?  @db.Date
+  balance                 Float?     @default(0) @db.Float
+  phone_number            String?    @db.VarChar(10)
+  address_street          String?    @db.VarChar(50)
+  address_city            String?    @db.VarChar(50)
+  address_zip             String?    @db.VarChar(10)
+  ec_name1                String?    @db.VarChar(50)
+  ec_phone1               String?    @db.VarChar(10)
+  ec_relation1            String?    @db.VarChar(30)
+  ec_name2                String?    @db.VarChar(50)
+  ec_phone2               String?    @db.VarChar(10)
+  ec_relation2            String?    @db.VarChar(30)
+  insurance_provider      String?    @db.VarChar(50)
+  insurance_policy_holder String?    @db.VarChar(50)
+  insurance_policy_number String?    @db.VarChar(20)
+  details_submitted_at    DateTime?  @db.DateTime(0)
+  credit                  Float?     @default(0) @db.Float
+  accounts                accounts   @relation(fields: [parent_id], references: [id], onDelete: Cascade, map: "parent_account_id_fk")
+  payments                payments[]
+  youth                   youth[]
+}
+
+model payments {
+  transaction_id String   @id @db.VarChar(45)
+  parent_id      String   @db.VarChar(36)
+  amount_paid    Float    @db.Float
+  amount_credit  Float?   @default(0) @db.Float
+  date_time      DateTime @db.DateTime(0)
+  parents        parents  @relation(fields: [parent_id], references: [parent_id], onDelete: NoAction, map: "payment_parent_id_fk")
+
+  @@index([parent_id], map: "payment_parent_id_fk_idx")
+}
+
+model prices {
+  price_id Int    @id @default(autoincrement())
+  type     String @db.VarChar(30)
+  price    Float  @db.Float
+  active   Int?   @default(0) @db.TinyInt
+}
+
+model youth {
+  youth_id             String           @id @db.VarChar(36)
+  first_name           String           @db.VarChar(30)
+  last_name            String           @db.VarChar(30)
+  parent_id            String           @db.VarChar(36)
+  birthday             DateTime         @db.Date
+  phone_number         String           @db.VarChar(10)
+  gender               youth_gender
+  grade                Int
+  survey_completed     Int?             @default(0) @db.TinyInt
+  allergies            String?          @db.VarChar(200)
+  dietary_restrictions String?          @db.VarChar(200)
+  updated_at           DateTime?        @db.DateTime(0)
+  accounts             accounts         @relation(fields: [youth_id], references: [id], onDelete: Cascade, map: "youth_account_id_fk")
+  parents              parents          @relation(fields: [parent_id], references: [parent_id], onDelete: Cascade, map: "youth_parent_id_fk")
+  youth_groups         youth_groups?
+  youth_responses      youth_responses?
+
+  @@index([parent_id], map: "youth_parent_id_fk_idx")
+}
+
+model youth_groups {
+  youth_id   String    @id @db.VarChar(36)
+  bus_id     Int?
+  family_id  Int?
+  cabin_id   Int?
+  updated_at DateTime? @db.DateTime(0)
+  cabins     cabins?   @relation(fields: [cabin_id], references: [id], onDelete: Cascade, map: "youth_groups_cabin_fk")
+  families   families? @relation(fields: [family_id], references: [id], onDelete: Cascade, map: "youth_groups_family_fk")
+  youth      youth     @relation(fields: [youth_id], references: [youth_id], onDelete: Cascade, map: "youth_groups_id_fk")
+
+  @@index([bus_id], map: "youth_groups_bus_fk_idx")
+  @@index([cabin_id], map: "youth_groups_cabin_fk_idx")
+  @@index([family_id], map: "youth_groups_family_fk_idx")
+}
+
+model youth_responses {
+  youth_id     String                      @id @db.VarChar(36)
+  shirt_size   youth_responses_shirt_size?
+  spirituality Int
+  knowledge    Int
+  improvement  Int
+  community    Int
+  question     String                      @db.VarChar(200)
+  activity     String                      @db.VarChar(200)
+  hopes        String                      @db.VarChar(200)
+  submitted_at DateTime?                   @db.DateTime(0)
+  youth        youth                       @relation(fields: [youth_id], references: [youth_id], onDelete: Cascade, map: "youth_responses_id_fk")
+}
+
+enum cabins_gender {
+  m
+  f
+}
+
+enum counselors_gender {
+  f
+  m
+}
+
+enum events_start_period {
+  AM
+  PM
+}
+
+enum accounts_account_type {
+  parent
+  counselor
+  youth
+  admin
+}
+
+enum counselors_shirt_size {
+  XS
+  S
+  M
+  L
+  XL
+  XXL
+}
+
+enum events_end_period {
+  AM
+  PM
+}
+
+enum youth_gender {
+  f
+  m
+}
+
+enum accounts_status {
+  active
+  inactive
+}
+
+enum financial_aid_apps_approved {
+  approved
+  pending
+  denied
+}
+
+enum youth_responses_shirt_size {
+  S
+  M
+  L
+  XL
+  XXL
+}

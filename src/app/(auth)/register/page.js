@@ -19,7 +19,7 @@ export default function Register() {
     register,
     handleSubmit,
     getValues,
-    formState: { errors, isDirty, isSubmitting, isSubmitted },
+    formState: { errors, isSubmitting, isSubmitted },
   } = useForm({
     defaultValues: {
       name: {
@@ -50,6 +50,7 @@ export default function Register() {
     }
   };
 
+  // render the alert indicating errors or successful submission
   const renderAlert = () => {
     return alert && alert.message && alert.type ? (
       <div
@@ -209,7 +210,9 @@ export default function Register() {
             </div>
           )}
         </div>
+
         {renderAlert()}
+
         <div className="flex justify-center">
           <div className="flex flex-col justify-center gap-2">
             {isSubmitting ? (
@@ -221,7 +224,7 @@ export default function Register() {
                 className="btn btn-primary"
                 type="submit"
                 value="REGISTER"
-                disabled={isSubmitting}
+                disabled={isSubmitted}
               />
             )}
             <Link className="btn btn-outline" href="/login">

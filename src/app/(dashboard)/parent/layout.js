@@ -1,5 +1,5 @@
 import Navbar from "@/components";
-export default function YouthDashboardLayout({ children }) {
+export default function ParentDashboardLayout({ children }) {
   return (
     <main>
       <Navbar account_type="parent" />
